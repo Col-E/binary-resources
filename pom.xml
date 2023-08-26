@@ -14,14 +14,6 @@
         <junit.version>5.8.2</junit.version>
     </properties>
 
-    <repositories>
-        <repository>
-            <url>https://dl.google.com/dl/android/maven2/</url>
-            <name>google</name>
-            <id>google</id>
-        </repository>
-    </repositories>
-
     <dependencies>
         <!-- Annotations -->
         <!-- https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305 -->
@@ -30,13 +22,6 @@
             <artifactId>jsr305</artifactId>
             <version>3.0.2</version>
             <scope>provided</scope>
-        </dependency>
-        <!-- Logging -->
-        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.36</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
         <dependency>
@@ -72,6 +57,14 @@
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-surefire-provider</artifactId>
             <version>1.3.2</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Logging -->
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.36</version>
             <scope>test</scope>
         </dependency>
         <!-- Primitive maps -->
