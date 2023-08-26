@@ -16,6 +16,7 @@
 
 package com.google.devrel.gmscore.tools.apk.arsc;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
@@ -109,9 +110,11 @@ public final class StringPoolChunk extends Chunk {
    * Returns a string at the given (0-based) index.
    *
    * @param index The (0-based) index of the string to return.
-   * @throws IndexOutOfBoundsException If the index is out of range (index < 0 || index >= size()).
    */
+  @Nonnull
   public String getString(int index) {
+    if (index >= strings.size())
+      return "?";
     return strings.get(index);
   }
 
