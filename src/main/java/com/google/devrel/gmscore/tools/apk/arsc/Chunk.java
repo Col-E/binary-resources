@@ -16,6 +16,7 @@
 
 package com.google.devrel.gmscore.tools.apk.arsc;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
@@ -248,9 +249,27 @@ public abstract class Chunk implements SerializableResource {
    * @param parent The parent to this chunk (or null if there's no parent).
    * @return new chunk
    */
+  @Nonnull
   public static Chunk newInstance(ByteBuffer buffer, @Nullable Chunk parent) {
+    short typeCode = buffer.getShort();
+    buffer.mark();
+    if (typeCode == Type.NULL.code()) {
+      // There are some obfuscated samples which rewrite the type-code of the XML chunk to be the null identifier.
+      // We'll see if this is such a case and handle it with XML if possible.
+      try {
+        return getChunk(buffer, parent, Type.XML.code());
+      } catch (Throwable t) {
+        // Not a valid XML chunk, reset the buffer position and treat it as a null chunk.
+        buffer.reset();
+      }
+    }
+    return getChunk(buffer, parent, typeCode);
+  }
+
+  @Nonnull
+  private static Chunk getChunk(ByteBuffer buffer, Chunk parent, short typeCode) {
     Chunk result;
-    Type type = Type.fromCode(buffer.getShort());
+    Type type = Type.fromCode(typeCode);
     switch (type) {
       case STRING_POOL:
         result = new StringPoolChunk(buffer, parent);
