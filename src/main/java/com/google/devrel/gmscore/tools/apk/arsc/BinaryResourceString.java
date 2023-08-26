@@ -67,6 +67,8 @@ public final class BinaryResourceString {
   public static String decodeString(ByteBuffer buffer, int offset, Type type) {
     int length;
     int characterCount = decodeLength(buffer, offset, type);
+    if (characterCount <= 0)
+      return "";
     offset += computeLengthOffset(characterCount, type);
     // UTF-8 strings have 2 lengths: the number of characters, and then the encoding length.
     // UTF-16 strings, however, only have 1 length: the number of characters.
@@ -76,6 +78,8 @@ public final class BinaryResourceString {
     } else {
       length = characterCount * 2;
     }
+    if (length <= 0)
+      return "";
     return new String(buffer.array(), offset, length, type.charset());
   }
 
@@ -144,6 +148,8 @@ public final class BinaryResourceString {
     // UTF-8 strings use a clever variant of the 7-bit integer for packing the string length.
     // If the first byte is >= 0x80, then a second byte follows. For these values, the length
     // is WORD-length in big-endian & 0x7FFF.
+    if (offset >= buffer.capacity())
+      return -1;
     int length = UnsignedBytes.toInt(buffer.get(offset));
     if ((length & 0x80) != 0) {
       length = ((length & 0x7F) << 8) | UnsignedBytes.toInt(buffer.get(offset + 1));
