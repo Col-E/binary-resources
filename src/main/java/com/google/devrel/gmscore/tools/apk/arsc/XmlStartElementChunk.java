@@ -59,8 +59,8 @@ public final class XmlStartElementChunk extends XmlNodeChunk {
     name = buffer.getInt();
     attributeStart = (buffer.getShort() & 0xFFFF);
     int attributeSize = (buffer.getShort() & 0xFFFF);
-    Preconditions.checkState(attributeSize == XmlAttribute.SIZE,
-        "attributeSize is wrong size. Got %s, want %s", attributeSize, XmlAttribute.SIZE);
+    // Preconditions.checkState(attributeSize == XmlAttribute.SIZE,
+    //     "attributeSize is wrong size. Got %s, want %s", attributeSize, XmlAttribute.SIZE);
     attributeCount = (buffer.getShort() & 0xFFFF);
 
     // The following indices are 1-based and need to be adjusted.
