@@ -31,6 +31,8 @@ public class BinaryResourceValue implements SerializableResource {
 
   /** Resource type codes. */
   public enum Type {
+    /** Used for unknown values */
+    UNKNOWN(-1),
     /** {@code data} is either 0 (undefined) or 1 (empty). */
     NULL(0x00),
     /** {@code data} holds a {@link ResourceTableChunk} entry reference. */
@@ -77,7 +79,10 @@ public class BinaryResourceValue implements SerializableResource {
     }
 
     Type(int code) {
-      this.code = UnsignedBytes.checkedCast(code);
+      if (code == -1)
+        this.code = (byte) -1;
+      else
+        this.code = UnsignedBytes.checkedCast(code);
     }
 
     public byte code() {
@@ -85,7 +90,7 @@ public class BinaryResourceValue implements SerializableResource {
     }
 
     public static Type fromCode(byte code) {
-      return Preconditions.checkNotNull(FROM_BYTE.get(code), "Unknown resource type: %s", code);
+      return FROM_BYTE.getOrDefault(code, UNKNOWN);
     }
   }
 
