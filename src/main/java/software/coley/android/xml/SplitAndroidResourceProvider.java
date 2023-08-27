@@ -24,6 +24,22 @@ public class SplitAndroidResourceProvider implements AndroidResourceProvider {
 		this.secondary = secondary;
 	}
 
+	/**
+	 * @return Primary resource provider.
+	 */
+	@Nonnull
+	public AndroidResourceProvider getPrimary() {
+		return primary;
+	}
+
+	/**
+	 * @return Secondary resource provider.
+	 */
+	@Nonnull
+	public AndroidResourceProvider getSecondary() {
+		return secondary;
+	}
+
 	@Override
 	public boolean hasResName(int resId) {
 		return primary.hasResName(resId) || secondary.hasResName(resId);

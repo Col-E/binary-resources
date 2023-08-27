@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class XmlDecoder {
 	private final XmlBuilder builder = new XmlBuilder();
 	private final Map<String, String> namespaces = new HashMap<>();
-	private final AndroidResourceProvider resourceProvider;
+	private final SplitAndroidResourceProvider resourceProvider;
 	private boolean namespacesAdded;
 	private StringPoolChunk stringPool;
 
@@ -33,10 +33,7 @@ public class XmlDecoder {
 	 */
 	public XmlDecoder(@Nonnull AndroidResourceProvider androidResources,
 					  @Nullable AndroidResourceProvider arscResources) {
-		if (arscResources != null)
-			resourceProvider = new SplitAndroidResourceProvider(arscResources, androidResources);
-		else
-			resourceProvider = androidResources;
+		resourceProvider = new SplitAndroidResourceProvider(new DelegatingAndroidResourceProvider(arscResources), androidResources);
 	}
 
 	/**
@@ -213,10 +210,10 @@ public class XmlDecoder {
 			case NULL:
 				return "null";
 			case ATTRIBUTE: {
-				String resName = resourceProvider.getResName(data);
+				String resName = resourceProvider.getPrimary().getResName(data);
 				if (resName != null)
 					return "?" + resName;
-				resName = resourceProvider.getResName(data);
+				resName = resourceProvider.getSecondary().getResName(data);
 				if (resName != null)
 					return "?android:" + resName;
 				return String.format(Locale.US, "?0x%1$x", data);
@@ -235,10 +232,10 @@ public class XmlDecoder {
 			case DYNAMIC_REFERENCE: {
 				if (data == 0)
 					return "0";
-				String resName = resourceProvider.getResName(data);
+				String resName = resourceProvider.getPrimary().getResName(data);
 				if (resName != null)
 					return "@" + resName;
-				resName = resourceProvider.getResName(data);
+				resName = resourceProvider.getSecondary().getResName(data);
 				if (resName != null)
 					return "@android:" + resName;
 				return String.format(Locale.US, "@ref/0x%1$08x", data);

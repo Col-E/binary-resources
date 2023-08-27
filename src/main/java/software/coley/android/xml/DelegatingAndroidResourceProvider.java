@@ -20,6 +20,14 @@ public class DelegatingAndroidResourceProvider implements AndroidResourceProvide
 		this.delegate = delegate;
 	}
 
+	/**
+	 * @return Delegate things are passed to.
+	 */
+	@Nullable
+	public AndroidResourceProvider getDelegate() {
+		return delegate;
+	}
+
 	@Override
 	public boolean hasResName(int resId) {
 		if (delegate == null) return false;
