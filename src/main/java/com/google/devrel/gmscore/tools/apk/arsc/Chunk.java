@@ -36,6 +36,7 @@ public abstract class Chunk implements SerializableResource {
 
   /** Types of chunks that can exist. */
   public enum Type {
+    UNKNOWN(-1),
     NULL(0x0000),
     STRING_POOL(0x0001),
     TABLE(0x0002),
@@ -64,7 +65,10 @@ public abstract class Chunk implements SerializableResource {
     }
 
     Type(int code) {
-      this.code = Shorts.checkedCast(code);
+      if (code == -1)
+        this.code = -1;
+      else
+        this.code = Shorts.checkedCast(code);
     }
 
     public short code() {
@@ -72,7 +76,7 @@ public abstract class Chunk implements SerializableResource {
     }
 
     public static Type fromCode(short code) {
-      return Preconditions.checkNotNull(FROM_SHORT.get(code), "Unknown chunk type: %s", code);
+      return FROM_SHORT.getOrDefault(code, UNKNOWN);
     }
   }
 
