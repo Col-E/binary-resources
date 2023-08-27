@@ -67,8 +67,6 @@ public final class BinaryResourceString {
   public static String decodeString(ByteBuffer buffer, int offset, Type type) {
     int length;
     int characterCount = decodeLength(buffer, offset, type);
-    if (characterCount <= 0)
-      return "";
     offset += computeLengthOffset(characterCount, type);
     // UTF-8 strings have 2 lengths: the number of characters, and then the encoding length.
     // UTF-16 strings, however, only have 1 length: the number of characters.
