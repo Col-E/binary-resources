@@ -78,6 +78,17 @@ public final class BinaryResourceString {
     }
     if (length <= 0)
       return "";
+
+    if ((offset + length) >= buffer.capacity()) {
+      // If the UTF-16 string is invalid, reinterpret as a UTF-8.
+      if (type == Type.UTF16) {
+        return decodeString(buffer, offset, Type.UTF8);
+      }
+
+      // Invalid string.
+      return "";
+    }
+
     return new String(buffer.array(), offset, length, type.charset());
   }
 
@@ -143,11 +154,13 @@ public final class BinaryResourceString {
   }
 
   private static int decodeLengthUTF8(ByteBuffer buffer, int offset) {
+    // Bounds check
+    if (offset >= buffer.capacity())
+      return -1;
+
     // UTF-8 strings use a clever variant of the 7-bit integer for packing the string length.
     // If the first byte is >= 0x80, then a second byte follows. For these values, the length
     // is WORD-length in big-endian & 0x7FFF.
-    if (offset >= buffer.capacity())
-      return -1;
     int length = UnsignedBytes.toInt(buffer.get(offset));
     if ((length & 0x80) != 0) {
       length = ((length & 0x7F) << 8) | UnsignedBytes.toInt(buffer.get(offset + 1));
@@ -156,6 +169,10 @@ public final class BinaryResourceString {
   }
 
   private static int decodeLengthUTF16(ByteBuffer buffer, int offset) {
+    // Bounds check
+    if (offset >= buffer.capacity())
+      return -1;
+
     // UTF-16 strings use a clever variant of the 7-bit integer for packing the string length.
     // If the first word is >= 0x8000, then a second word follows. For these values, the length
     // is DWORD-length in big-endian & 0x7FFFFFFF.
