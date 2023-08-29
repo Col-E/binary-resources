@@ -23,6 +23,7 @@ public class XmlDecoder {
 	private final SplitAndroidResourceProvider resourceProvider;
 	private boolean namespacesAdded;
 	private StringPoolChunk stringPool;
+	private XmlResourceMapChunk resourceMap;
 
 	/**
 	 * @param androidResources
@@ -140,7 +141,7 @@ public class XmlDecoder {
 		for (XmlAttribute xmlAttribute : chunk.getAttributes()) {
 			String prefix = namespaces.get(xmlAttribute.namespace());
 			if (prefix == null) prefix = "";
-			builder.attribute(prefix, xmlAttribute.name(), getValue(xmlAttribute));
+			builder.attribute(prefix, getAttributeName(xmlAttribute), getValue(xmlAttribute));
 		}
 	}
 
@@ -151,7 +152,7 @@ public class XmlDecoder {
 	 * 		Resource map chunk to visit.
 	 */
 	public void xmlResourceMap(@Nonnull XmlResourceMapChunk chunk) {
-		// no-op
+		resourceMap = chunk;
 	}
 
 	/**
@@ -180,6 +181,32 @@ public class XmlDecoder {
 	@Nonnull
 	public String getReconstructedXml() {
 		return builder.toString();
+	}
+
+	/**
+	 * Attempts to get the name of the attribute, first from the {@code StringPoolChunk} otherwise fallback
+	 * to the {@code XmlResourceMapChunk}
+	 *
+	 * @param attribute Current XML attribute.
+	 * @return The name of the attribute, empty if resourceMap is null or the raw resource id
+	 */
+	@Nonnull
+	private String getAttributeName(@Nonnull XmlAttribute attribute) {
+		String name = attribute.name();
+		if (!(name == null || name.isEmpty()))
+			return name;
+
+		if (resourceMap == null)
+			return "";
+
+		BinaryResourceIdentifier resourceId = resourceMap.getResourceId(attribute.nameIndex());
+		name = resourceProvider.getResName(resourceId.id());
+		// TODO we should try to resolve the name from "attr/name" -> "android:name" but my current knowledge of the
+		// resource system is limited and I'm not sure how to do this.
+		if (name == null)
+			return String.format("(%s)", resourceId);
+
+		return name;
 	}
 
 	@Nonnull
