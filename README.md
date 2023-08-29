@@ -4,4 +4,6 @@ A fork of the upstream [binary-resources](https://android.googlesource.com/platf
 
 ## What's changed?
 
-A few assorted fixes for handling obfuscated inputs.
+- No longer requires/depends-on the Android SDK artifacts
+- Helper utilities for printing binary XML
+- Obfuscation resilience, handling inputs that would otherwise crash the base project, but are valid at install-time
