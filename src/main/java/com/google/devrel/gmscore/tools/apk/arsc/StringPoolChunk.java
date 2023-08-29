@@ -81,11 +81,22 @@ public final class StringPoolChunk extends Chunk {
 
   protected StringPoolChunk(ByteBuffer buffer, @Nullable Chunk parent) {
     super(buffer, parent);
-    stringCount = buffer.getInt();
-    styleCount = buffer.getInt();
+    int stringCountEncoded = buffer.getInt();
+    styleCount   = buffer.getInt();
     flags        = buffer.getInt();
     stringsStart = buffer.getInt();
     stylesStart  = buffer.getInt();
+
+    // From: https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/libs/androidfw/ResourceTypes.cpp;l=565
+    // The runtime pool parsing does not trust the given 'stringCount' value.
+    // So we compute it instead.
+    if (styleCount == 0) {
+      // count = (size-of-space)/sizeof(int)
+      stringCount = (stringsStart - headerSize)/4;
+    } else {
+      // TODO: Not yet implemented
+      stringCount = stringCountEncoded;
+    }
   }
 
   @Override
@@ -173,7 +184,7 @@ public final class StringPoolChunk extends Chunk {
   }
 
   private List<String> readStrings(ByteBuffer buffer, int offset, int count) {
-    List<String> result = new ArrayList<>();
+    List<String> result = new ArrayList<>(count);
     int previousOffset = -1;
     // After the header, we now have an array of offsets for the strings in this pool.
     for (int i = 0; i < count; ++i) {
