@@ -82,9 +82,15 @@ public final class XmlStartElementChunk extends XmlNodeChunk {
     buffer.mark();
     buffer.position(offset);
 
-    while (offset < endOffset) {
-      result.add(XmlAttribute.create(buffer, this));
-      offset += XmlAttribute.SIZE;
+    // The original logic was 'offset < endOffset' however we have changed the += on offset to be a variable size
+    // and adjusted the buffer to match the offset. So instead we now do a count check.
+    while (result.size() < attributeCount) {
+      XmlAttribute attribute = XmlAttribute.create(buffer, this);
+      result.add(attribute);
+      offset += attribute.size();
+
+      // The buffer should be positioned to be just after the current offset plus the attribute's reported size.
+      buffer.position(offset);
     }
 
     buffer.reset();
