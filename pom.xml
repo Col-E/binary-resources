@@ -6,7 +6,7 @@
 
     <groupId>com.android.tools.apkparser</groupId>
     <artifactId>binary-resources</artifactId>
-    <version>31.3.0-alpha01.4</version>
+    <version>31.3.0-alpha01.5</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
