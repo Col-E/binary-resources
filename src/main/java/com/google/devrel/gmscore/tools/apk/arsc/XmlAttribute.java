@@ -22,9 +22,10 @@ import java.util.Objects;
 
 /** Represents an XML attribute and value. */
 public class XmlAttribute implements SerializableResource {
+  private static final int LOCAL_SIZE = 4 * 3;
 
   /** The serialized size in bytes of an {@link XmlAttribute}. */
-  public static final int SIZE = 12 + BinaryResourceValue.SIZE;
+  public static final int SIZE = LOCAL_SIZE + BinaryResourceValue.SIZE;
 
   private final int namespaceIndex;
   private final int nameIndex;
@@ -44,6 +45,16 @@ public class XmlAttribute implements SerializableResource {
     int rawValue = buffer.getInt();
     BinaryResourceValue typedValue = BinaryResourceValue.create(buffer);
     return new XmlAttribute(namespace, name, rawValue, typedValue, parent);
+  }
+
+  /**
+   * @return Declared size of this attribute. Considers the three 4-byte integers
+   * [namespace, name, rawValue] plus the declared size of 'typedValue'.
+   *
+   * @see #SIZE Typical size, generally 20. However, obfuscators can tamper with this data to change the size.
+   */
+  public int size() {
+    return LOCAL_SIZE + typedValue().size();
   }
 
   private XmlAttribute(int namespaceIndex,
