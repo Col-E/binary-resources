@@ -201,12 +201,11 @@ public class XmlDecoder {
 
 		BinaryResourceIdentifier resourceId = resourceMap.getResourceId(attribute.nameIndex());
 		name = resourceProvider.getResName(resourceId.id());
-		// TODO we should try to resolve the name from "attr/name" -> "android:name" but my current knowledge of the
-		// resource system is limited and I'm not sure how to do this.
+		// See res-map.txt
 		if (name == null)
 			return String.format("(%s)", resourceId);
 
-		return name;
+		return name.replace("attr/", "android:");
 	}
 
 	@Nonnull

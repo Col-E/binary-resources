@@ -11936,3 +11936,5 @@
 01170014=xml/sms_7bit_translation_table
 01170015=xml/sms_short_codes
 01170016=xml/storage_list
+01010572=attr/compileSdkVersion
+01010573=attr/compileSdkVersionCodename
