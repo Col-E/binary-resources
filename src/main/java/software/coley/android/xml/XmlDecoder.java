@@ -184,8 +184,8 @@ public class XmlDecoder {
 	}
 
 	/**
-	 * Attempts to get the name of the attribute, first from the {@code StringPoolChunk} otherwise fallback
-	 * to the {@code XmlResourceMapChunk}
+	 * Attempts to get the name of the attribute, first from the {@link StringPoolChunk} otherwise fallback
+	 * to the {@link XmlResourceMapChunk}
 	 *
 	 * @param attribute Current XML attribute.
 	 * @return The name of the attribute, empty if resourceMap is null or the raw resource id

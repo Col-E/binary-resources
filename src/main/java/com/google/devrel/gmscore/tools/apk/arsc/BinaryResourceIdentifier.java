@@ -74,7 +74,7 @@ public class BinaryResourceIdentifier {
   /** The (0-based) index of the entry in a {@link TypeChunk} containing this resource. */
   public int entryId() { return entryId; }
 
-  /** int representation of {@code BinaryResourceIdentifier} in the form of 0xpptteeee */
+  /** int representation of {@link BinaryResourceIdentifier} in the form of 0xpptteeee */
   public int id() {
     return packageId << PACKAGE_ID_SHIFT | typeId << TYPE_ID_SHIFT | entryId;
   }
