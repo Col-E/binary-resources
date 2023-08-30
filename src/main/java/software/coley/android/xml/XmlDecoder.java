@@ -196,12 +196,11 @@ public class XmlDecoder {
 		if (!(name == null || name.isEmpty()))
 			return name;
 
-		if (resourceMap == null)
+		BinaryResourceIdentifier resourceId = resourceMap.getResourceId(attribute.nameIndex());
+		if (resourceId == null)
 			return "";
 
-		BinaryResourceIdentifier resourceId = resourceMap.getResourceId(attribute.nameIndex());
 		name = resourceProvider.getResName(resourceId.id());
-		// See res-map.txt
 		if (name == null)
 			return String.format("(%s)", resourceId);
 
