@@ -1,4 +1,4 @@
-# Binary Resources
+# Binary Resources [![badge](https://jitpack.io/v/Col-E/binary-resources.svg)](https://jitpack.io/#Col-E/binary-resources/)
 
 A fork of the upstream [binary-resources](https://android.googlesource.com/platform/tools/base/+/refs/heads/mirror-goog-studio-main/apkparser/binary-resources/) tool project.
 
@@ -27,3 +27,5 @@ String decoded = XmlDecoder.decode(binaryResource, androidResources, appResource
 The example implementation of `AndroidResourceProvider` can be found here:
  - [`AndroidResourceProviderImpl.java`](src/test/java/software/coley/androidres/AndroidResourceProviderImpl.java)
  - The data it pulls from can be found in [`src/test/resources/android`](src/test/resources/android)
+
+You can use the project as a maven artifact via [JitPack](https://jitpack.io/#Col-E/binary-resources/)
