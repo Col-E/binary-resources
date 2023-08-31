@@ -273,7 +273,7 @@ public class AndroidResourceProviderImpl implements AndroidResourceProvider {
 		try {
 			// Parse res-map entries (hex=name)
 			String resMapText = new String(ByteStreams.toByteArray(AndroidResourceProviderImpl.class.getResourceAsStream("/android/res-map.txt")));
-			String[] resMapLines = resMapText.split("\n");
+			String[] resMapLines = resMapText.split("[\n\r]+");
 			Int2ObjectMap<String> resIdToName = new Int2ObjectOpenHashMap<>(resMapLines.length);
 			Object2IntMap<String> resNameToId = new Object2IntOpenHashMap<>(resMapLines.length);
 			for (String line : resMapLines) {
