@@ -81,23 +81,26 @@ public final class PackageChunk extends ChunkWithChunks {
 
   @Override
   protected void init(ByteBuffer buffer) {
-    super.init(buffer);
-    for (Chunk chunk : getChunks().values()) {
-      if (chunk instanceof TypeChunk) {
-        TypeChunk typeChunk = (TypeChunk) chunk;
-        types.put(typeChunk.getId(), typeChunk);
-      } else if (chunk instanceof TypeSpecChunk) {
-        TypeSpecChunk typeSpecChunk = (TypeSpecChunk) chunk;
-        typeSpecs.put(typeSpecChunk.getId(), typeSpecChunk);
-      } else if (chunk instanceof LibraryChunk) {
+    try {
+      super.init(buffer);
+    } finally {
+      // We wrap the above init in a try-finally so that if one of the last sub-chunks fails
+      // all the already read sub-chunks can still be used.
+      for (Chunk chunk : getChunks().values()) {
+        if (chunk instanceof TypeChunk) {
+          TypeChunk typeChunk = (TypeChunk) chunk;
+          types.put(typeChunk.getId(), typeChunk);
+        } else if (chunk instanceof TypeSpecChunk) {
+          TypeSpecChunk typeSpecChunk = (TypeSpecChunk) chunk;
+          typeSpecs.put(typeSpecChunk.getId(), typeSpecChunk);
+        } else if (chunk instanceof LibraryChunk) {
           if (libraryChunk.isPresent()) {
-              throw new IllegalStateException(
-                      "Multiple library chunks present in package chunk.");
+            throw new IllegalStateException("Multiple library chunks present in package chunk.");
           }
           libraryChunk = Optional.of((LibraryChunk) chunk);
-      } else if (!(chunk instanceof StringPoolChunk)) {
-        throw new IllegalStateException(
-            String.format("PackageChunk contains an unexpected chunk: %s", chunk.getClass()));
+        } else if (!(chunk instanceof StringPoolChunk)) {
+          throw new IllegalStateException(String.format("PackageChunk contains an unexpected chunk: %s", chunk.getClass()));
+        }
       }
     }
   }
