@@ -4,6 +4,7 @@ import com.google.devrel.gmscore.tools.apk.arsc.BinaryResourceFile;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import software.coley.android.xml.AndroidResourceProvider;
 import software.coley.android.xml.XmlDecoder;
 
 import javax.annotation.Nonnull;
@@ -40,20 +41,32 @@ public class XmlDecodingTests {
 		byte[] bytes = Files.readAllBytes(path);
 		BinaryResourceFile binaryResource = new BinaryResourceFile(bytes);
 
-		// We will have some '?' entries, as we only provide the XML model, not the application's arsc models.
-		String decoded = XmlDecoder.decode(binaryResource, ANDROID_BASE, null);
+		// If the associated 'arsc' file is present, load it as well so we can feed in values for a more complete XML decode.
+		AndroidResourceProvider localResources = null;
+		BinaryResourceFile arscBinaryResource = null;
+		Path arscPath = path.resolveSibling(path.getFileName().toString().replace(".xml", ".arsc"));
+		if (Files.exists(arscPath)) {
+			bytes = Files.readAllBytes(arscPath);
+			arscBinaryResource = new BinaryResourceFile(bytes);
+			localResources = AndroidResourceProviderImpl.fromArsc(arscBinaryResource);
+		}
+
+		// We will have some '?' entries, as we only provide the XML model in most cases.
+		String decoded = XmlDecoder.decode(binaryResource, ANDROID_BASE, localResources);
 		System.out.println(decoded);
 	}
 
 	public static Stream<Arguments> getNormalSamples() throws IOException {
 		return Files.walk(Paths.get("src/test/resources/normal"))
 				.filter(Files::isRegularFile)
+				.filter(p -> p.toString().endsWith(".xml"))
 				.map(p -> () -> new Path[]{p});
 	}
 
 	public static Stream<Arguments> getJankySamples() throws IOException {
 		return Files.walk(Paths.get("src/test/resources/janky"))
 				.filter(Files::isRegularFile)
+				.filter(p -> p.toString().endsWith(".xml"))
 				.map(p -> () -> new Path[]{p});
 	}
 }
