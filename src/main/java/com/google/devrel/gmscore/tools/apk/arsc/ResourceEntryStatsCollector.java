@@ -222,10 +222,7 @@ public class ResourceEntryStatsCollector {
   private void addSizes(Collection<ResourceEntry> entries, int overhead, int size, int count) {
     int usageCount = entries.size();
     for (ResourceEntry resourceEntry : entries) {
-      // TODO(acornwall): Replace with Java 8's #getOrDefault when possible.
-      if (!stats.containsKey(resourceEntry)) {
-        stats.put(resourceEntry, new ResourceStatistics());
-      }
+      stats.computeIfAbsent(resourceEntry, k -> new ResourceStatistics());
       ResourceStatistics resourceStats = stats.get(resourceEntry);
       if (usageCount == 1) {
         resourceStats.addPrivateSize(size);

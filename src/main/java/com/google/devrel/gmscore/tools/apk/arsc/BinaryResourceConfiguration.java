@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.primitives.UnsignedBytes;
 
+import javax.annotation.Nonnull;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.*;
@@ -640,10 +641,9 @@ public class BinaryResourceConfiguration implements SerializableResource {
     return result;
   }
 
-  private <K, V> V getOrDefault(Map<K, V> map, K key, V defaultValue) {
-    // TODO(acornwall): Remove this when Java 8's Map#getOrDefault is available.
+  @Nonnull
+  private <K, V> V getOrDefault(@Nonnull Map<K, V> map, @Nonnull K key, @Nonnull V defaultValue) {
     // Null is not returned, even if the map contains a key whose value is null. This is intended.
-    V value = map.get(key);
-    return value != null ? value : defaultValue;
+    return map.getOrDefault(key, defaultValue);
   }
 }
