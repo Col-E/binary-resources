@@ -97,8 +97,8 @@ public class BinaryResourceValue implements SerializableResource {
   /** The serialized size in bytes of a {@link BinaryResourceValue}. */
   public static final int SIZE = 8;
 
-  private final int size;
   private final Type type;
+  private final int size;
   private final int data;
 
   public static BinaryResourceValue create(ByteBuffer buffer) {
@@ -152,5 +152,14 @@ public class BinaryResourceValue implements SerializableResource {
   @Override
   public int hashCode() {
     return Objects.hash(size, type, data);
+  }
+
+  @Override
+  public String toString() {
+    return "BinaryResourceValue{" +
+            "type=" + type +
+            ", size=" + size +
+            ", data=" + data +
+            '}';
   }
 }
