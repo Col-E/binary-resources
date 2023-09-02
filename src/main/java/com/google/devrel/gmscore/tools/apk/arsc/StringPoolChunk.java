@@ -124,7 +124,7 @@ public final class StringPoolChunk extends Chunk {
    */
   @Nonnull
   public String getString(int index) {
-    if (index >= strings.size())
+    if (index >= strings.size() || index < 0)
       return "?";
     return strings.get(index);
   }
