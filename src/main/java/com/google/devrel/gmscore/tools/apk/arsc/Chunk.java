@@ -141,7 +141,7 @@ public abstract class Chunk implements SerializableResource {
    * <p>A chunk's current size can be determined from the length of the byte array returned from
    * {@link #toByteArray}.
    */
-  public final int getOriginalChunkSize() {
+  public int getOriginalChunkSize() {
     return chunkSize;
   }
 
@@ -150,7 +150,10 @@ public abstract class Chunk implements SerializableResource {
    * @param buffer The buffer to be repositioned.
    */
   private final void seekToEndOfChunk(ByteBuffer buffer) {
-    buffer.position(offset + chunkSize);
+    int newPosition = offset + chunkSize;
+    if (newPosition > buffer.limit())
+      throw new IllegalStateException("Chunk's reported size goes beyond buffer capacity");
+    buffer.position(newPosition);
   }
 
   /**
@@ -272,6 +275,7 @@ public abstract class Chunk implements SerializableResource {
 
   @Nonnull
   private static Chunk getChunk(ByteBuffer buffer, Chunk parent, short typeCode) {
+    int start = buffer.position();
     Chunk result;
     Type type = Type.fromCode(typeCode);
     switch (type) {
@@ -317,8 +321,16 @@ public abstract class Chunk implements SerializableResource {
       default:
         result = new UnknownChunk(buffer, parent);
     }
-    result.init(buffer);
-    result.seekToEndOfChunk(buffer);
+    try {
+      result.init(buffer);
+      result.seekToEndOfChunk(buffer);
+    } catch (BogusUnknownChunkException bogus) {
+      bogus.skipToEndOfContainingChunk(parent, start);
+    } catch (Throwable t) {
+      // Skip to the end of the buffer.
+      // If we're the top-most chunk this will be it, all parsing is done.
+      buffer.position(buffer.limit());
+    }
     return result;
   }
 }

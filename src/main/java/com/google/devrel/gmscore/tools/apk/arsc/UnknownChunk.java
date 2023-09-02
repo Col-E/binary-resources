@@ -34,14 +34,46 @@ public final class UnknownChunk extends Chunk {
 
   private final byte[] payload;
 
+  private boolean isBogus;
+
+  private int patchedSize;
+
   protected UnknownChunk(ByteBuffer buffer, @Nullable Chunk parent) {
     super(buffer, parent);
+    int payloadSize = chunkSize - headerSize;
+    int headerSize = this.headerSize - Chunk.METADATA_SIZE;
 
     type = Type.fromCode(buffer.getShort(offset));
-    header = new byte[headerSize - Chunk.METADATA_SIZE];
-    payload = new byte[chunkSize - headerSize];
-    buffer.get(header);
-    buffer.get(payload);
+    header = new byte[headerSize];
+    payload = new byte[payloadSize];
+
+    // Sanity check the size of the header/payload
+    if (buffer.remaining() >= headerSize)
+      buffer.get(header);
+    else
+      isBogus = true;
+
+    if (buffer.remaining() >= payloadSize)
+      buffer.get(payload);
+    else
+      isBogus = true;
+  }
+
+  public void setPatchedSize(int patchedSize) {
+    this.patchedSize = patchedSize;
+  }
+
+  @Override
+  public int getOriginalChunkSize() {
+    if (isBogus)
+      return patchedSize;
+    return super.getOriginalChunkSize();
+  }
+
+  @Override
+  protected void init(ByteBuffer buffer) {
+    if (isBogus)
+      throw new BogusUnknownChunkException(this, buffer);
   }
 
   @Override

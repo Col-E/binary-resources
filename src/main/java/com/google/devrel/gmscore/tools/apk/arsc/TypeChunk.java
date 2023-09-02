@@ -333,14 +333,23 @@ public final class TypeChunk extends Chunk {
     @Nullable
     public static Entry create(ByteBuffer buffer, int baseOffset, TypeChunk parent) {
       int offset = buffer.getInt();
-      if (offset == NO_ENTRY) {
+      if (offset == NO_ENTRY || offset > buffer.limit()) {
         return null;
       }
+
       int position = buffer.position();
-      buffer.position(baseOffset + offset);  // Set buffer position to resource entry start
-      Entry result = newInstance(buffer, parent);
-      buffer.position(position);  // Restore buffer position
-      return result;
+      try {
+        buffer.position(baseOffset + offset);  // Set buffer position to resource entry start
+        Entry result = newInstance(buffer, parent);
+        return result;
+      } catch (Throwable t) {
+        // Will occur when the target position is outside the buffer capacity.
+        // Some obfuscated inputs seem to have nonsensical values, so we'll skip these.
+        return null;
+      } finally {
+        // Restore buffer position
+        buffer.position(position);
+      }
     }
 
     @Nonnull
