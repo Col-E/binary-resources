@@ -107,6 +107,8 @@ public abstract class Chunk implements SerializableResource {
     offset = buffer.position() - 2;
     headerSize = (buffer.getShort() & 0xFFFF);
     chunkSize = buffer.getInt();
+    if (chunkSize == 0)
+      throw new ZeroSizedChunk();
   }
 
   /**

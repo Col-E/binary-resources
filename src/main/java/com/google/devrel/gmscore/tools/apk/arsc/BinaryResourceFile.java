@@ -36,7 +36,14 @@ public final class BinaryResourceFile implements SerializableResource {
   public BinaryResourceFile(byte[] buf) {
     ByteBuffer buffer = ByteBuffer.wrap(buf).order(ByteOrder.LITTLE_ENDIAN);
     while (buffer.remaining() > 0) {
-      chunks.add(Chunk.newInstance(buffer));
+      try {
+        chunks.add(Chunk.newInstance(buffer));
+      } catch (ZeroSizedChunk zeroSizedChunk) {
+        // Obfuscators can create chunks that self-report a size of zero at the end such that seeking forward
+        // seeks 0 bytes, preventing completion of parsing the file. In such cases we know no real data
+        // can exist after this, so we're done.
+        break;
+      }
     }
   }
 
