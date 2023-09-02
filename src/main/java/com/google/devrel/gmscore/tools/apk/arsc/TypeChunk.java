@@ -16,6 +16,7 @@
 
 package com.google.devrel.gmscore.tools.apk.arsc;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.google.common.base.Preconditions;
 import com.google.common.io.LittleEndianDataOutputStream;
@@ -342,7 +343,7 @@ public final class TypeChunk extends Chunk {
       return result;
     }
 
-    @Nullable
+    @Nonnull
     private static Entry newInstance(ByteBuffer buffer, TypeChunk parent) {
       int headerSize = buffer.getShort() & 0xFFFF;
       int flags = buffer.getShort() & 0xFFFF;
