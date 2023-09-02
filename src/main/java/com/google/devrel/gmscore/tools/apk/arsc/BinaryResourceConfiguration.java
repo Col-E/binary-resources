@@ -109,9 +109,23 @@ public class BinaryResourceConfiguration implements SerializableResource {
     }
 
     // After parsing everything that's known, account for anything that's unknown.
+    // Because the 'size' field can be a lie, the unknown remaining byte count may be negative.
+    // In these cases, treat it like 0 bytes remain.
     int bytesRead = buffer.position() - startPosition;
-    byte[] unknown = new byte[size - bytesRead];
-    buffer.get(unknown);
+    int sizeRemaining = size - bytesRead;
+    byte[] unknown;
+    if (sizeRemaining > 0) {
+      unknown = new byte[sizeRemaining];
+      buffer.get(unknown);
+    } else {
+      unknown = new byte[0];
+    }
+    bytesRead += unknown.length;
+
+    // Size should always match bytes read.
+    if (size != bytesRead) {
+      size = bytesRead;
+    }
 
     return new BinaryResourceConfiguration(size, mcc, mnc, language, region, orientation,
                                            touchscreen, density, keyboard, navigation, inputFlags, screenWidth, screenHeight,
